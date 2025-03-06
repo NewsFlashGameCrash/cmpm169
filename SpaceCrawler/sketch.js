@@ -1,4 +1,4 @@
-
+let clicked = false;
 let heroes = ["Jake Cloudjumper", "Glup Shitto", "George Lucas", "The ghost of Luke Skywalker", "That broom kid from Episode VIII"]
 let hero = heroes[Math.floor(Math.random() * heroes.length)];
 let sidekick;
@@ -7,8 +7,7 @@ let empire = empires[Math.floor(Math.random() * empires.length)];
 let titles = ["Darth", "Lith", "Head Honcho", "Acting Deputy Vice-Undersecretary", "Principal"];
 let evil_names = ["Binks", "Attornicus", "Steve", "Stubbed Toenius", "Gene Roddenberry", "Mouse", "Kirk", "Mudder", "Palpatine. Yes, we brought him back again."]
 let villain = titles[Math.floor(Math.random() * titles.length)] + " " + evil_names[Math.floor(Math.random() * evil_names.length)];
-console.log(villain)
-let episodes = ["Invasion of the\n" + empire, hero + " Is Back", "Phatasmal Killer\noh wait that's a D&D Spell nevermind", villain + "\nDoes a generally rude thing", "Blatant Exploitation of Nostalgia", ""]
+let episodes = ["Invasion of the\n" + empire, hero + " Is Back", "Phatasmal Killer\noh wait that's a D&D Spell nevermind", villain + "\nDoes a generally rude thing", "Blatant Exploitation of Nostalgia"]
 let superweapons = ["The Sun Squisher", "a really big barrel of TNT", "a strongly worded letter", "the Meteor Masher", "the End Credits", "The Death Star, but this time it's pink"]
 let superweapon = superweapons[Math.floor(Math.random() * superweapons.length)];
 let episode = episodes[Math.floor(Math.random() * episodes.length)]
@@ -23,14 +22,13 @@ let p3 = p3_options[Math.floor(Math.random() * p3_options.length)]
 var y, z = 0, crawlFont;
 let logoDist = 0;
 function preload() {
-  crawlFont = loadFont('AlternateGothicEF-NoTwo.ttf');
-  logoFont = loadFont('Starjhol.ttf');
+  crawlFont = loadFont('./AlternateGothicEF-NoTwo.ttf');
+  logoFont = loadFont('./Starjhol.ttf');
   audio = loadSound("Star Wars Theme Kazoo Cover.mp3");
 }
 var timer = 0;
 
 function setup() {
-  audio.play();
   createCanvas(windowWidth, windowWidth / 2.35,  WEBGL);
   perspective(2 * atan(height / 2 / 800), width / height, 0.1 * 800, 10 * 80000)
   y = height / 2
@@ -39,6 +37,16 @@ function setup() {
 
 function draw() {
   background(0);
+  if(!clicked) {
+    fill('white')
+    push()
+    rotateX(PI / 2)
+    noStroke()
+    fill('white')
+    cylinder(20)
+    pop()
+  }
+  else {
   textFont(crawlFont);
   if (timer <= 6500) {
   let alphaval = 255;
@@ -55,11 +63,15 @@ function draw() {
   }
   else {
     push();
+    let alphaval = 255;
+    if (timer >= 17000) {
+      alphaval = max(1 - (timer - 17000) / 500, 0) * 255;
+    }
     translate(0, 0, -logoDist)
     logoDist += deltaTime;
     textFont(logoFont);
     textAlign(CENTER, CENTER);
-    fill(255, 200, 0);
+    fill(255, 200, 0, alphaval);
     textSize(width * 0.45);
     text("\@", 0, 0)
     pop();
@@ -81,4 +93,12 @@ function draw() {
     }
   }
   timer += deltaTime
+}
+}
+
+function mousePressed() {
+  if(!clicked) {
+  clicked = true;
+  audio.play()
+  }
 }
