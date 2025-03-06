@@ -1,0 +1,62 @@
+* {
+  font-family: "Noto Sans Light", "Open Sans Light", sans-serif;
+  color: #ccc;
+  font-size: 1.1rem;
+}
+
+button {
+  background: #444;
+  border: solid #555;
+  padding: 0.5rem;
+  border-radius: 1rem;
+  cursor: pointer;
+  margin: 0.3rem;
+  display: inline-block;
+}
+
+input[type=file]{
+  color:transparent;
+  width:90px;
+}
+
+button:hover{
+  filter: brightness(1.1);
+}
+
+button:active{
+  transform: scale(0.9);
+}
+
+canvas{
+  display: block
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #111;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+}
+
+.example_content{
+  width: 80%;
+  background: #333;
+  padding: 5em;
+  margin: 1rem;
+  border-radius: 1rem;
+  box-shadow: black 0 0 15px;
+  align-items: center;
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+}
+#canvas-container {
+  width: 100%;
+  height: 80%;
+}

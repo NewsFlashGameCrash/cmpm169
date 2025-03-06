@@ -1,0 +1,18 @@
+<head>
+  <title>The Sights of Music</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.1/p5.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.1/addons/p5.sound.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+  <h1>The Sights of Music</h1>
+  <input accept='.sf2, .sf3, .dls' id='soundfont_input' type='file' title='Using The Normalized Famicom Multichip Bank VG2'><label id="soundfontLabel">Using The Normalized Famicom Multichip Bank VG2</label>
+  <input type="file" id="midi_input" multiple accept=".mid, .rmi"title='Please Upload a File'><label id="midiLabel">Please Upload a File</label>
+  <input type="button" id="pause" multiple accept=".mid, .rmi"title='Pause/Play'><label id="soundfontLabel">Pause/Play</label>
+  <br><br>
+
+  <!-- note the type="module" -->
+  <div id="canvas-container">
+    <script src="visualizer.js" type="module"></script>
+  </div>
+</body>
