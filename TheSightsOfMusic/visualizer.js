@@ -11,6 +11,17 @@ new p5(function(p5){
     const key_height = 75;
     let tempo = 0;
 
+    function get_channel(channels) {
+        let lowestSetBit = (channels) & (-channels);
+        if(lowestSetBit) {
+            if(lowestSetBit >= 65536 || Math.floor(Math.log2(lowestSetBit)) >= 16) {
+                console.log("ERROR OUT OF BOUNDS FROM ", channels);
+            }
+            return Math.floor(Math.log2(lowestSetBit));
+        }
+        return 16;
+    }
+
     p5.setup = function() {
         p5.createCanvas(p5.windowWidth, p5.windowHeight * 0.75);
         p5.background(50);
@@ -38,22 +49,26 @@ new p5(function(p5){
         p5.background(50);
         for (let ctr = 0; ctr < white_keys.length; ctr++) {
             const key = white_keys[ctr]
-            p5.fill(channelColors[key.channel]);
+            p5.fill(channelColors[get_channel(key.channel)]);
+//            console.log("Returning ", get_channel(key.channel), " from ", key.channel);
             p5.rect(key.x, key.y, key.width, key.height);
         }
         for (let ctr = 0; ctr < black_keys.length; ctr++) {
             const key = black_keys[ctr]
-            if(key.channel >= 16) {
+            if(get_channel(key.channel) == 16) {
                 p5.fill(channelColors[17]);
             }
             else {
-                p5.fill(channelColors[key.channel]);
+                p5.fill(channelColors[get_channel(key.channel)]);
             }
             p5.rect(key.x, key.y, key.width, key.height);
         }
         for (let ctr = note_array.length - 1; ctr >= 0; ctr--) {
             const note = note_array[ctr];
-            p5.fill(channelColors[note.channel]);
+            if(get_channel(note.channel) >= 16 || get_channel(note.channel) < 0) {
+                console.log("ERROR OOB GOT ", get_channel(note.channel), " from ", note.channel);
+            }
+            p5.fill(channelColors[get_channel(note.channel)]);
             tempo = seq.currentTempo;
             if(note.playing) {
                 note.height += (key_height) * (120 * p5.deltaTime/60000);
@@ -96,14 +111,14 @@ new p5(function(p5){
                 this.x = p5.width / 75 * ((Math.floor(note / 12) * 7 + Math.ceil(Math.min(note % 12 - 5, 0) / 2) + Math.ceil(Math.max(note % 12, 4) / 2)));
                 this.width = p5.width / 75
                 this.height = key_height;
-                this.channel = 16;
+                this.channel = 0;
                 this.white = 1;
             }
             else {
                 this.x = p5.width / 75 * (1 + (Math.floor(note/12) * 7 + Math.ceil(Math.min(note % 12 - 5, 0) / 2) + Math.ceil(Math.max(note % 12, 4) / 2))) - (p5.width / 75) * (3.5 / 12);
                 this.width = (p5.width / 75) * (7 / 12);
                 this.height = key_height * 2/3;
-                this.channel = 16;
+                this.channel = 0;
                 this.white = 0;
             }
             this.y = p5.height - key_height;
@@ -147,16 +162,25 @@ new p5(function(p5){
         // add listeners to show note being pressed
         // add note on listener
         synth.eventHandler.addEvent("noteon", "demo-keyboard-note-on", event => {
-            let note = new Notes(event.midiNote, event.channel % 16);
-            current_notes[event.channel % 16][event.midiNote] = note;
-            keys[event.midiNote].channel = event.channel % 16;
+            let note = new Notes(event.midiNote, (1 << (event.channel % 16)));
+            if(!current_notes[event.channel % 16][event.midiNote]) {
+                current_notes[event.channel % 16][event.midiNote] = note;
+                keys[event.midiNote].channel |= (1 << (event.channel % 16));
+                if(event.channel == 0) {
+                    console.log("Added channel ", event.channel, " to key ", event.midiNote, " for value ", keys[event.midiNote].channel);
+                }
+;
+            }
+            else {
+                note.playing = false;
+            }
         });
 
         // add note off listener
         synth.eventHandler.addEvent("noteoff", "demo-keyboard-note-off", event => {
             current_notes[event.channel % 16][event.midiNote].playing = false;
             current_notes[event.channel % 16][event.midiNote] = null;
-            keys[event.midiNote].channel = 16;
+            keys[event.midiNote].channel &= ~(1 << (event.channel % 16));
 
         });
 
@@ -171,7 +195,7 @@ new p5(function(p5){
                 }
             }    
             for(let ctr = 0; ctr < keys.length; ctr++) {
-                keys[ctr].channel = 16;
+                keys[ctr].channel = 0;
             }
         });
     });
